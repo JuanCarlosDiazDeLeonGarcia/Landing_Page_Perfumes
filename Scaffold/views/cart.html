@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Perfumes & Aromas</title>
+    <link rel="stylesheet" href="../css/base.css" />
+    <link rel="stylesheet" href="../css/carrito.css" />
+</head>
+<body>
+    <div id="navbar"></div>
+
+    <script>
+        // Cargar menu.html dentro de #menu
+        fetch("menu.html")
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById("navbar").innerHTML = data;
+            })
+            .catch(err => console.error("Error cargando navbar:", err));
+    </script>
+
+    <div class="content">
+    </div>
+
+    <!-- CONTENEDOR DEL CARRITO -->
+    <div class="cart-container">
+        <h2>🛒 Mi Carrito</h2>
+        <table id="cartTable">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se llenará con JS -->
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- SCRIPT PARA CARGAR EL JSON -->
+    <script>
+        async function loadCart() {
+            try {
+                const response = await fetch("../src/data/products.json");
+                const data = await response.json();
+
+                // Aquí accedemos a "productos"
+                const productos = data.productos;
+
+                // Simulación: tomamos los 3 primeros productos como si estuvieran en el carrito
+                const cartItems = productos.slice(0, 3).map(p => ({
+                    ...p,
+                    cantidad: 1
+                }));
+
+                const tbody = document.querySelector("#cartTable tbody");
+                tbody.innerHTML = "";
+
+                cartItems.forEach(item => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML = `
+                                <td><img src="../src/img/${item.imagen}" alt="${item.nombre}" width="60"></td>
+                                <td>${item.nombre}</td>
+                                <td>$${item.precio.toFixed(2)}</td>
+                                <td>${item.cantidad}</td>
+                                <td>$${(item.precio * item.cantidad).toFixed(2)}</td>
+                                <td class="cart-buttons">
+                                    <button class="btn-plus">+</button>
+                                    <button class="btn-minus">-</button>
+                                    <button class="btn-delete">Eliminar</button>
+                                </td>
+                            `;
+
+                    tbody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error("Error cargando productos:", error);
+            }
+        }
+
+        loadCart();</script>
+</body>
+</html>
